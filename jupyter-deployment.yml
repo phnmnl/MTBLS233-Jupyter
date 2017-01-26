@@ -1,0 +1,78 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jupyter-volume-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: jupyter
+  labels:
+    app: phenomenal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phenomenal
+      task: jupyter
+  template:
+    metadata:
+      labels:
+        app: phenomenal
+        task: jupyter
+    spec:
+      containers:
+      - name: jupyter
+        image: mcapuccini/jupyter
+        args: ["jupyter","notebook"]
+        ports:
+          - containerPort: 8888
+        resources:
+          requests:
+            memory: 2G
+            cpu: 2
+        volumeMounts:
+          - mountPath: "/home/jovyan/work"
+            name: shared-volume
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: jupyter-volume-claim
+      restartPolicy: Always
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter
+spec:
+  ports:
+  - name: http
+    targetPort: 8888
+    port: 8888
+  selector:
+    app: phenomenal
+    task: jupyter
+    
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: phenomenal
+spec:
+  rules:
+  - host: nb.jupydemo.phenomenal.cloud
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jupyter
+          servicePort: http
+

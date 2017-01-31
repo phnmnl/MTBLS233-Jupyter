@@ -65,7 +65,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: phenomenal
+  name: jupyter-ingress
 spec:
   rules:
   - host: nb.jupydemo.phenomenal.cloud

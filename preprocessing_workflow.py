@@ -20,11 +20,12 @@ class PeakPickerTask(KubernetesJobTask):
                     "PeakPickerHiRes",
                     "-in", "/work/" + self.sampleFile,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/params/PPparam.ini"
+                    "-ini", "/work/openms-params/PPparam.ini"
                 ],
                 "volumeMounts": [{
                     "mountPath": "/work",
-                    "name": "shared-volume"
+                    "name": "shared-volume",
+                    "subPath": "MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -32,8 +33,7 @@ class PeakPickerTask(KubernetesJobTask):
                  "persistentVolumeClaim": {
                      "claimName": "jupyter-volume-claim"
                  }
-             }],
-             "restartPolicy": "OnFailure"
+             }]
         }
     
     def output(self):
@@ -57,11 +57,12 @@ class FeatureFinderTask(KubernetesJobTask):
                     "FeatureFinderMetabo",
                     "-in", "/work/" + self.input().path,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/params/FFparam.ini"
+                    "-ini", "/work/openms-params/FFparam.ini"
                 ],
                 "volumeMounts": [{
                     "mountPath": "/work",
-                    "name": "shared-volume"
+                    "name": "shared-volume",
+                    "subPath": "MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -69,8 +70,7 @@ class FeatureFinderTask(KubernetesJobTask):
                  "persistentVolumeClaim": {
                      "claimName": "jupyter-volume-claim"
                  }
-             }],
-             "restartPolicy": "OnFailure"
+             }]
         }
     
     def requires(self):
@@ -97,11 +97,12 @@ class FeatureLinkerTask(KubernetesJobTask):
                 "args": [
                     "FeatureLinkerUnlabeledQT -in " + inputStr +
                     " -out /work/" + self.output().path +
-                    " -ini /work/params/FLparam.ini"
+                    " -ini /work/openms-params/FLparam.ini"
                 ],
                 "volumeMounts": [{
                     "mountPath": "/work",
-                    "name": "shared-volume"
+                    "name": "shared-volume",
+                    "subPath": "MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -109,8 +110,7 @@ class FeatureLinkerTask(KubernetesJobTask):
                  "persistentVolumeClaim": {
                      "claimName": "jupyter-volume-claim"
                  }
-             }],
-             "restartPolicy": "OnFailure"
+             }]
         }
     
     def requires(self):
@@ -135,11 +135,12 @@ class FileFilterTask(KubernetesJobTask):
                     "FileFilter",
                     "-in", "/work/" + self.input().path,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/params/FileFparam.ini"
+                    "-ini", "/work/openms-params/FileFparam.ini"
                 ],
                 "volumeMounts": [{
                     "mountPath": "/work",
-                    "name": "shared-volume"
+                    "name": "shared-volume",
+                    "subPath": "MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -147,8 +148,7 @@ class FileFilterTask(KubernetesJobTask):
                  "persistentVolumeClaim": {
                      "claimName": "jupyter-volume-claim"
                  }
-             }],
-             "restartPolicy": "OnFailure"
+             }]
         }
     
     def requires(self):
@@ -172,11 +172,12 @@ class TextExporterTask(KubernetesJobTask):
                     "TextExporter",
                     "-in", "/work/" + self.input().path,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/params/TEparam.ini"
+                    "-ini", "/work/openms-params/TEparam.ini"
                 ],
                 "volumeMounts": [{
                     "mountPath": "/work",
-                    "name": "shared-volume"
+                    "name": "shared-volume",
+                    "subPath": "MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -184,8 +185,7 @@ class TextExporterTask(KubernetesJobTask):
                  "persistentVolumeClaim": {
                      "claimName": "jupyter-volume-claim"
                  }
-             }],
-             "restartPolicy": "OnFailure"
+             }]
         }
     
     def requires(self):

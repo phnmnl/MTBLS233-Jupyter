@@ -10,6 +10,7 @@ class PeakPickerTask(KubernetesJobTask):
     name = "peak-picker"
     max_retrials = 3
     
+    @property
     def spec_schema(self): 
         return {
             "containers": [{
@@ -46,6 +47,7 @@ class FeatureFinderTask(KubernetesJobTask):
     name = "feature-finder"
     max_retrials = 3
     
+    @property
     def spec_schema(self): 
         return {
             "containers": [{
@@ -83,6 +85,7 @@ class FeatureLinkerTask(KubernetesJobTask):
     name = "feature-linker"
     max_retrials = 3
     
+    @property
     def spec_schema(self): 
         inputList = map(lambda i: "/work/" + i.path, self.input())
         inputStr = ' '.join(inputList)
@@ -122,6 +125,7 @@ class FileFilterTask(KubernetesJobTask):
     name = "file-filter"
     max_retrials = 3
     
+    @property
     def spec_schema(self): 
         return {
             "containers": [{
@@ -158,6 +162,7 @@ class TextExporterTask(KubernetesJobTask):
     name = "text-exporter"
     max_retrials = 3
     
+    @property
     def spec_schema(self): 
         return {
             "containers": [{

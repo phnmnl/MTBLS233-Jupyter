@@ -1,6 +1,7 @@
 data/*
 results/*
 __pycache__
+downstream-analysis/.ipynb_checkpoints
 !data/README.md
 !results/README.md
 

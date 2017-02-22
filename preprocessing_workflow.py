@@ -15,7 +15,7 @@ class PeakPickerTask(KubernetesJobTask):
         return {
             "containers": [{
                 "name": self.name,
-                "image": "docker-registry.phenomenal-h2020.eu/phnmnl/openms",
+                "image": "container-registry.phenomenal-h2020.eu/phnmnl/openms:v1.11.1_cv0.1.9",
                 "command": [
                     "PeakPickerHiRes",
                     "-in", "/work/" + self.sampleFile,
@@ -52,7 +52,7 @@ class FeatureFinderTask(KubernetesJobTask):
         return {
             "containers": [{
                 "name": self.name,
-                "image": "docker-registry.phenomenal-h2020.eu/phnmnl/openms",
+                "image": "container-registry.phenomenal-h2020.eu/phnmnl/openms:v1.11.1_cv0.1.9",
                 "command": [
                     "FeatureFinderMetabo",
                     "-in", "/work/" + self.input().path,
@@ -82,6 +82,8 @@ class FeatureFinderTask(KubernetesJobTask):
 
 class FeatureLinkerTask(KubernetesJobTask):
     
+    groupSuffix = luigi.Parameter()
+    
     name = "feature-linker"
     max_retrials = 3
     
@@ -92,13 +94,20 @@ class FeatureLinkerTask(KubernetesJobTask):
         return {
             "containers": [{
                 "name": self.name,
-                "image": "docker-registry.phenomenal-h2020.eu/phnmnl/openms",
+                "image": "container-registry.phenomenal-h2020.eu/phnmnl/openms:v1.11.1_cv0.1.9",
                 "command": ["sh","-c"],
                 "args": [
                     "FeatureLinkerUnlabeledQT -in " + inputStr +
                     " -out /work/" + self.output().path +
-                    " -ini /work/openms-params/FLparam.ini"
+                    " -ini /work/openms-params/FLparam.ini" +
+                    " -threads 2"
                 ],
+                "resources": {
+                  "requests": {
+                    "memory": "4G",
+                    "cpu": "2"
+                  }
+                },
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
@@ -114,13 +123,15 @@ class FeatureLinkerTask(KubernetesJobTask):
         }
     
     def requires(self):
-        inputFiles = glob.glob("data/*.mzML")
+        inputFiles = glob.glob("data/*_"+self.groupSuffix+".mzML")
         return map(lambda f: FeatureFinderTask(sampleFile=f),inputFiles)
     
     def output(self):
-        return luigi.LocalTarget("results/linked.consensusXML")
+        return luigi.LocalTarget("results/linked_"+self.groupSuffix+".consensusXML")
 
 class FileFilterTask(KubernetesJobTask):
+    
+    groupSuffix = luigi.Parameter()
     
     name = "file-filter"
     max_retrials = 3
@@ -130,7 +141,7 @@ class FileFilterTask(KubernetesJobTask):
         return {
             "containers": [{
                 "name": self.name,
-                "image": "docker-registry.phenomenal-h2020.eu/phnmnl/openms",
+                "image": "container-registry.phenomenal-h2020.eu/phnmnl/openms:v1.11.1_cv0.1.9",
                 "command": [
                     "FileFilter",
                     "-in", "/work/" + self.input().path,
@@ -152,12 +163,14 @@ class FileFilterTask(KubernetesJobTask):
         }
     
     def requires(self):
-        return FeatureLinkerTask()
+        return FeatureLinkerTask(groupSuffix=self.groupSuffix)
     
     def output(self):
-        return luigi.LocalTarget("results/linked_filtered.consensusXML")
+        return luigi.LocalTarget("results/linked_filtered_"+self.groupSuffix+".consensusXML")
     
 class TextExporterTask(KubernetesJobTask):
+    
+    groupSuffix = luigi.Parameter()
     
     name = "text-exporter"
     max_retrials = 3
@@ -167,7 +180,7 @@ class TextExporterTask(KubernetesJobTask):
         return {
             "containers": [{
                 "name": self.name,
-                "image": "docker-registry.phenomenal-h2020.eu/phnmnl/openms",
+                "image": "container-registry.phenomenal-h2020.eu/phnmnl/openms:v1.11.1_cv0.1.9",
                 "command": [
                     "TextExporter",
                     "-in", "/work/" + self.input().path,
@@ -189,8 +202,23 @@ class TextExporterTask(KubernetesJobTask):
         }
     
     def requires(self):
-        return FeatureLinkerTask()
+        return FileFilterTask(groupSuffix=self.groupSuffix)
     
     def output(self):
-        return luigi.LocalTarget("results/exported.csv")
-    
+        return luigi.LocalTarget("results/"+self.groupSuffix+".csv")
+
+class AllGroups(luigi.WrapperTask):
+    def requires(self):
+        yield TextExporterTask(groupSuffix="alternate_neg_high_mr")
+        yield TextExporterTask(groupSuffix="alternate_neg_low_mr")
+        yield TextExporterTask(groupSuffix="alternate_neg")
+        yield TextExporterTask(groupSuffix="alternate_pos_high_mr")
+        yield TextExporterTask(groupSuffix="alternate_pos_low_mr")
+        yield TextExporterTask(groupSuffix="alternate_pos")
+        yield TextExporterTask(groupSuffix="ges_neg")
+        yield TextExporterTask(groupSuffix="ges_pos")
+        yield TextExporterTask(groupSuffix="high_neg")
+        yield TextExporterTask(groupSuffix="high_pos")
+        yield TextExporterTask(groupSuffix="low_neg")
+        yield TextExporterTask(groupSuffix="low_pos")
+        

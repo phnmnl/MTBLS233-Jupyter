@@ -22,10 +22,16 @@ class PeakPickerTask(KubernetesJobTask):
                     "-out", "/work/" + self.output().path,
                     "-ini", "/work/openms-params/PPparam.ini"
                 ],
+                "resources": {
+                  "requests": {
+                    "memory": "2G",
+                    "cpu": "1"
+                  }
+                },
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
-                    "subPath": "MTBLS233"
+                    "subPath": "jupyter/MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -59,10 +65,16 @@ class FeatureFinderTask(KubernetesJobTask):
                     "-out", "/work/" + self.output().path,
                     "-ini", "/work/openms-params/FFparam.ini"
                 ],
+                "resources": {
+                  "requests": {
+                    "memory": "2G",
+                    "cpu": "1"
+                  }
+                },
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
-                    "subPath": "MTBLS233"
+                    "subPath": "jupyter/MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -111,7 +123,7 @@ class FeatureLinkerTask(KubernetesJobTask):
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
-                    "subPath": "MTBLS233"
+                    "subPath": "jupyter/MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -148,10 +160,16 @@ class FileFilterTask(KubernetesJobTask):
                     "-out", "/work/" + self.output().path,
                     "-ini", "/work/openms-params/FileFparam.ini"
                 ],
+                "resources": {
+                  "requests": {
+                    "memory": "2G",
+                    "cpu": "1"
+                  }
+                },
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
-                    "subPath": "MTBLS233"
+                    "subPath": "jupyter/MTBLS233"
                  }]
              }],
              "volumes": [{
@@ -187,10 +205,16 @@ class TextExporterTask(KubernetesJobTask):
                     "-out", "/work/" + self.output().path,
                     "-ini", "/work/openms-params/TEparam.ini"
                 ],
+                "resources": {
+                  "requests": {
+                    "memory": "2G",
+                    "cpu": "1"
+                  }
+                },
                 "volumeMounts": [{
                     "mountPath": "/work",
                     "name": "shared-volume",
-                    "subPath": "MTBLS233"
+                    "subPath": "jupyter/MTBLS233"
                  }]
              }],
              "volumes": [{

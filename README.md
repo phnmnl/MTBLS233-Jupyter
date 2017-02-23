@@ -30,8 +30,10 @@ cd MTBLS233
 export PYTHONPATH=./ 
 luigi --module preprocessing_workflow AllGroups \
   --scheduler-host luigi.default \
-  --workers 40
+  --workers <parallelism-level>
 ```
+
+> **Warning**: Remember to substitute `<parallelism-level>` with the number of parallel processes that you aim to spawn in the cluster
 
 If everithing goes well you'll be able to monitor the progress of your analysis at:
 

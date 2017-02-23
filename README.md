@@ -10,7 +10,7 @@ Start by opening Jupyter in your browser at: `http://notebook.<deployment-id>.ph
 
 ### Ingest the MTBLS233 dataset from MetaboLights
 
-[MetaboLights](http://www.ebi.ac.uk/metabolights/) offers an FTP service, so we can ingest the MTBLS233 dataset with Linux commands.
+[MetaboLights](http://www.ebi.ac.uk/metabolights/) offers an FTP service, so we can ingest the MTBLS233 dataset with Linux commands. 
 
 1. First open a Jupyter terminal: `New > Terminal`
 2. Ingest the dataset using **wget**:

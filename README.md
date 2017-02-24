@@ -4,7 +4,7 @@ In this page we introduce an OpenMS preprocessing workflow, and R downstream ana
 ## Introduction
 The aim of [the study](http://www.sciencedirect.com/science/article/pii/S000326701630647X) performed on MTBLS233 was to produce quantitative information of the highest possible number of reliable features in untargeted metabolomics. Three different approaches of mass spectromic acquisition parameter tuning were tested to see which gave the highest number of spectral features.
 
-In this proof-of-principle workflow we recreate the workflow used in the MTBLS233 study in a distributed manner to run on the PhenoMeNal platform. The workflow was originally implemeted in [OpenMS](https://www.openms.de/) v. 1.1.1. followed by the downstream analysis in [KNIME](https://www.knime.org/). Here we fire up and controll the pipeline with Jupyter where the preprocessing in OpenMS has been wrapped in docker containers to facilitate scaling and the downstream analysis written in R has been extracted and implemented directly in Jupyter.
+In this proof-of-principle workflow we recreate the workflow used in the MTBLS233 study in a distributed manner to run on the PhenoMeNal platform. The workflow was originally implemeted in [OpenMS](https://www.openms.de/) v. 1.1.1. followed by the downstream analysis in [KNIME](https://www.knime.org/). Here we fire up and controll the pipeline with Jupyter where the preprocessing in OpenMS has been wrapped in Docker containers to facilitate scaling, and the downstream analysis written in R has been extracted and implemented directly in Jupyter.
 
 ## Run the preprocessing workflow
 

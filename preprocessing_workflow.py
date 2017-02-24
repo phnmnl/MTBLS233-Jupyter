@@ -233,16 +233,16 @@ class TextExporterTask(KubernetesJobTask):
 
 class AllGroups(luigi.WrapperTask):
     def requires(self):
-        yield TextExporterTask(groupSuffix="alternate_neg_high_mr")
-        yield TextExporterTask(groupSuffix="alternate_neg_low_mr")
-        yield TextExporterTask(groupSuffix="alternate_neg")
+#        yield TextExporterTask(groupSuffix="alternate_neg_high_mr")
+#        yield TextExporterTask(groupSuffix="alternate_neg_low_mr")
+#        yield TextExporterTask(groupSuffix="alternate_neg")
         yield TextExporterTask(groupSuffix="alternate_pos_high_mr")
         yield TextExporterTask(groupSuffix="alternate_pos_low_mr")
-        yield TextExporterTask(groupSuffix="alternate_pos")
-        yield TextExporterTask(groupSuffix="ges_neg")
-        yield TextExporterTask(groupSuffix="ges_pos")
-        yield TextExporterTask(groupSuffix="high_neg")
-        yield TextExporterTask(groupSuffix="high_pos")
-        yield TextExporterTask(groupSuffix="low_neg")
-        yield TextExporterTask(groupSuffix="low_pos")
+#        yield TextExporterTask(groupSuffix="alternate_pos")
+#        yield TextExporterTask(groupSuffix="ges_neg")
+#        yield TextExporterTask(groupSuffix="ges_pos")
+#        yield TextExporterTask(groupSuffix="high_neg")
+#        yield TextExporterTask(groupSuffix="high_pos")
+#        yield TextExporterTask(groupSuffix="low_neg")
+#        yield TextExporterTask(groupSuffix="low_pos")
         

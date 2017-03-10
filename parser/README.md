@@ -17,5 +17,5 @@ $ docker build -t parser .
 To run the service you need to provide it with the names of your input and output files and you need to add a data volume to your image containing your input file. In the example below the input data is located in the local directory *results* and a destination folder is created named data. 
 
 ```
-$ docker run -v /home/MTBLS233-Jupyter/results:/data parser /results/input.csv /results/output.csv
+$ docker run -v /home/MTBLS233-Jupyter/results:/data parser /data/input.csv /data/output.csv
 ```

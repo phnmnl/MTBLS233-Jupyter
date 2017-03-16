@@ -37,7 +37,7 @@ class PeakPickerTask(KubernetesJobTask):
              "volumes": [{
                  "name": "shared-volume",
                  "persistentVolumeClaim": {
-                     "claimName": "jupyter-volume-claim"
+                     "claimName": "galaxy-pvc"
                  }
              }]
         }
@@ -80,7 +80,7 @@ class FeatureFinderTask(KubernetesJobTask):
              "volumes": [{
                  "name": "shared-volume",
                  "persistentVolumeClaim": {
-                     "claimName": "jupyter-volume-claim"
+                     "claimName": "galaxy-pvc"
                  }
              }]
         }
@@ -129,7 +129,7 @@ class FeatureLinkerTask(KubernetesJobTask):
              "volumes": [{
                  "name": "shared-volume",
                  "persistentVolumeClaim": {
-                     "claimName": "jupyter-volume-claim"
+                     "claimName": "galaxy-pvc"
                  }
              }]
         }
@@ -175,7 +175,7 @@ class FileFilterTask(KubernetesJobTask):
              "volumes": [{
                  "name": "shared-volume",
                  "persistentVolumeClaim": {
-                     "claimName": "jupyter-volume-claim"
+                     "claimName": "galaxy-pvc"
                  }
              }]
         }
@@ -220,7 +220,7 @@ class TextExporterTask(KubernetesJobTask):
              "volumes": [{
                  "name": "shared-volume",
                  "persistentVolumeClaim": {
-                     "claimName": "jupyter-volume-claim"
+                     "claimName": "galaxy-pvc"
                  }
              }]
         }

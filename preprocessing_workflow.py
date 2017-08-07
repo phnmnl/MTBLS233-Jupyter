@@ -6,6 +6,12 @@ import glob
 class PeakPickerTask(KubernetesJobTask):
     
     sampleFile = luigi.Parameter()
+    paramFile = ""
+    
+    if sampleFile.find("_pos") != -1:
+        paramFile = "PPparam_pos.ini"
+    else:
+        paramFile = "PPparam_neg.ini"
     
     name = "peak-picker"
     max_retrials = 3
@@ -20,7 +26,7 @@ class PeakPickerTask(KubernetesJobTask):
                     "PeakPickerHiRes",
                     "-in", "/work/" + self.sampleFile,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/openms-params/PPparam.ini"
+                    "-ini", "/work/openms-params/" + paramFile
                 ],
                 "resources": {
                   "requests": {
@@ -49,6 +55,12 @@ class PeakPickerTask(KubernetesJobTask):
 class FeatureFinderTask(KubernetesJobTask):
     
     sampleFile = luigi.Parameter()
+    paramFile = ""
+    
+    if sampleFile.find("_pos") != -1:
+        paramFile = "FFparam_pos.ini"
+    else:
+        paramFile = "FFparam_neg.ini"
     
     name = "feature-finder"
     max_retrials = 3
@@ -63,7 +75,7 @@ class FeatureFinderTask(KubernetesJobTask):
                     "FeatureFinderMetabo",
                     "-in", "/work/" + self.input().path,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/openms-params/FFparam.ini"
+                    "-ini", "/work/openms-params/" + paramFile
                 ],
                 "resources": {
                   "requests": {

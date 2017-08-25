@@ -6,13 +6,10 @@ import glob
 class PeakPickerTask(KubernetesJobTask):
     
     sampleFile = luigi.Parameter()
-    paramFile = ""
-    
-    if sampleFile.find("_pos") != -1:
-        paramFile = "PPparam_pos.ini"
-    else:
-        paramFile = "PPparam_neg.ini"
-    
+    posOrNeg = luigi.Parameter()
+    endSuffix = luigi.Parameter()  
+    paramFile = "PPparam"
+        
     name = "peak-picker"
     max_retrials = 3
     
@@ -26,7 +23,7 @@ class PeakPickerTask(KubernetesJobTask):
                     "PeakPickerHiRes",
                     "-in", "/work/" + self.sampleFile,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/openms-params/" + paramFile
+                    "-ini", "/work/openms-params/" + self.paramFile + self.posOrNeg + ".ini"
                 ],
                 "resources": {
                   "requests": {
@@ -55,13 +52,10 @@ class PeakPickerTask(KubernetesJobTask):
 class FeatureFinderTask(KubernetesJobTask):
     
     sampleFile = luigi.Parameter()
-    paramFile = ""
-    
-    if sampleFile.find("_pos") != -1:
-        paramFile = "FFparam_pos.ini"
-    else:
-        paramFile = "FFparam_neg.ini"
-    
+    posOrNeg = luigi.Parameter()
+    endSuffix = luigi.Parameter()  
+    paramFile = "FFparam"
+
     name = "feature-finder"
     max_retrials = 3
     
@@ -75,7 +69,7 @@ class FeatureFinderTask(KubernetesJobTask):
                     "FeatureFinderMetabo",
                     "-in", "/work/" + self.input().path,
                     "-out", "/work/" + self.output().path,
-                    "-ini", "/work/openms-params/" + paramFile
+                    "-ini", "/work/openms-params/" + self.paramFile + self.posOrNeg + ".ini" 
                 ],
                 "resources": {
                   "requests": {
@@ -98,7 +92,7 @@ class FeatureFinderTask(KubernetesJobTask):
         }
     
     def requires(self):
-        return PeakPickerTask(sampleFile=self.sampleFile)
+        return PeakPickerTask(sampleFile=self.sampleFile, posOrNeg=self.posOrNeg, endSuffix=self.endSuffix)
     
     def output(self):
         filename = basename("{0}.featureXML".format(*self.sampleFile.rsplit('.', 1)))
@@ -107,7 +101,9 @@ class FeatureFinderTask(KubernetesJobTask):
 class FeatureLinkerTask(KubernetesJobTask):
     
     groupSuffix = luigi.Parameter()
-    
+    posOrNeg = luigi.Parameter()
+    endSuffix = luigi.Parameter()
+ 
     name = "feature-linker"
     max_retrials = 3
     
@@ -147,15 +143,17 @@ class FeatureLinkerTask(KubernetesJobTask):
         }
     
     def requires(self):
-        inputFiles = glob.glob("data/*_"+self.groupSuffix+".mzML")
-        return map(lambda f: FeatureFinderTask(sampleFile=f),inputFiles)
+        inputFiles = glob.glob("data/*_"+self.groupSuffix+self.posOrNeg+self.endSuffix+".mzML")
+        return map(lambda f: FeatureFinderTask(sampleFile=f, posOrNeg=self.posOrNeg, endSuffix=self.endSuffix),inputFiles)
     
     def output(self):
-        return luigi.LocalTarget("results/linked_"+self.groupSuffix+".consensusXML")
+        return luigi.LocalTarget("results/linked_"+self.groupSuffix+self.posOrNeg+self.endSuffix+".consensusXML")
 
 class FileFilterTask(KubernetesJobTask):
     
     groupSuffix = luigi.Parameter()
+    posOrNeg = luigi.Parameter()
+    endSuffix = luigi.Parameter()
     
     name = "file-filter"
     max_retrials = 3
@@ -193,14 +191,16 @@ class FileFilterTask(KubernetesJobTask):
         }
     
     def requires(self):
-        return FeatureLinkerTask(groupSuffix=self.groupSuffix)
+        return FeatureLinkerTask(groupSuffix=self.groupSuffix, posOrNeg=self.posOrNeg, endSuffix=self.endSuffix)
     
     def output(self):
-        return luigi.LocalTarget("results/linked_filtered_"+self.groupSuffix+".consensusXML")
+        return luigi.LocalTarget("results/linked_filtered_"+self.groupSuffix+self.posOrNeg+self.endSuffix+".consensusXML")
     
 class TextExporterTask(KubernetesJobTask):
     
     groupSuffix = luigi.Parameter()
+    posOrNeg = luigi.Parameter()
+    endSuffix = luigi.Parameter()
     
     name = "text-exporter"
     max_retrials = 3
@@ -238,23 +238,22 @@ class TextExporterTask(KubernetesJobTask):
         }
     
     def requires(self):
-        return FileFilterTask(groupSuffix=self.groupSuffix)
+        return FileFilterTask(groupSuffix=self.groupSuffix, posOrNeg=self.posOrNeg, endSuffix=self.endSuffix)
     
     def output(self):
-        return luigi.LocalTarget("results/"+self.groupSuffix+".csv")
+        return luigi.LocalTarget("results/"+self.groupSuffix+self.posOrNeg+self.endSuffix+".csv")
 
 class AllGroups(luigi.WrapperTask):
-    def requires(self):
-#        yield TextExporterTask(groupSuffix="alternate_neg_high_mr")
-#        yield TextExporterTask(groupSuffix="alternate_neg_low_mr")
-#        yield TextExporterTask(groupSuffix="alternate_neg")
-        yield TextExporterTask(groupSuffix="alternate_pos_high_mr")
-        yield TextExporterTask(groupSuffix="alternate_pos_low_mr")
-#        yield TextExporterTask(groupSuffix="alternate_pos")
-#        yield TextExporterTask(groupSuffix="ges_neg")
-#        yield TextExporterTask(groupSuffix="ges_pos")
-#        yield TextExporterTask(groupSuffix="high_neg")
-#        yield TextExporterTask(groupSuffix="high_pos")
-#        yield TextExporterTask(groupSuffix="low_neg")
-#        yield TextExporterTask(groupSuffix="low_pos")
-        
+    def requires(self): 
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_neg", endSuffix="_high_mr")
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_pos", endSuffix="_high_mr")
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_neg", endSuffix="_low_mr")
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_pos", endSuffix="_low_mr")
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_neg", endSuffix="")
+        yield TextExporterTask(groupSuffix="alternate", posOrNeg="_pos", endSuffix="")
+        yield TextExporterTask(groupSuffix="ges", posOrNeg="_neg", endSuffix="")
+        yield TextExporterTask(groupSuffix="ges", posOrNeg="_pos", endSuffix="")
+        yield TextExporterTask(groupSuffix="high", posOrNeg="_neg", endSuffix="")
+        yield TextExporterTask(groupSuffix="high", posOrNeg="_pos", endSuffix="")
+        yield TextExporterTask(groupSuffix="low", posOrNeg="_neg", endSuffix="")
+        yield TextExporterTask(groupSuffix="low", posOrNeg="_pos", endSuffix="")
